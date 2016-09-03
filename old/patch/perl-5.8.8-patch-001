@@ -1,0 +1,13 @@
+diff -Naur perl-5.8.8/Configure perl-5.8.8.new/Configure
+--- perl-5.8.8/Configure	2006-01-08 15:51:03.000000000 +0100
++++ perl-5.8.8.new/Configure	2007-05-06 02:40:08.000000000 +0200
+@@ -22027,7 +22027,8 @@
+ 
+ EOM
+ 	rp="Press return or use a shell escape to edit config.sh:"
+-	. UU/myread
++	#. UU/myread
++    ans=""
+ 	nostick=''
+ 	case "$ans" in
+ 	'') ;;

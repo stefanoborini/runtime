@@ -1,0 +1,1442 @@
+ARCH=osx
+
+# Variables definition 
+THIS_DIR=$(PWD)
+PATCH_DIR=$(THIS_DIR)/patch
+RUNTIME_DIR=$(THIS_DIR)/runtime
+
+TMP_DIR=$(RUNTIME_DIR)/__tmp
+UNPACK_DIR=$(RUNTIME_DIR)/__unpack
+BUILD_FLAGS_DIR=$(RUNTIME_DIR)/buildflags
+BUILD_LOGS_DIR=$(RUNTIME_DIR)/buildlogs
+DOWNLOAD_DIR=$(RUNTIME_DIR)/download
+OPT_DIR=$(RUNTIME_DIR)/opt
+MANUAL_INSTALL=$(RUNTIME_DIR)/manual_install
+
+LIBS=-L$(RUNTIME_DIR)/lib
+INCLUDES=-I$(RUNTIME_DIR)/include
+BINS=$(RUNTIME_DIR)/bin
+
+COMPILER_PARAMS=export PATH=$(BINS):$$PATH CC=$(RUNTIME_DIR)/bin/gcc LDFLAGS="$(LIBS)" CPPFLAGS="$(INCLUDES)" CPP="$(RUNTIME_DIR)/bin/cpp" PYTHONPATH=$(RUNTIME_DIR)/lib/python2.4/site-packages/;
+WGET=wget -nc --passive-ftp --progress=dot
+
+# collects all the runtime targets one by one.
+ALL_RUNTIME_TARGETS=
+ALL_DOWNLOAD_TARGETS=
+# <<fold
+# package versions fold>>
+GMP_VERSION=4.2.1
+MPFR_VERSION=2.2.1
+GCC_VERSION=4.0.3
+LAPACK_VERSION=3.1.0
+ATLAS_VERSION=3.6.0
+NUMPY_VERSION=1.0
+SCIPY_VERSION=0.5.1
+IPYTHON_VERSION=0.7.2
+QT_VERSION=mac-opensource-src-4.2.1
+QWT_VERSION=5.0.2
+SIP_VERSION=4.5.2
+PYQT_VERSION=mac-gpl-4.1.1
+CMAKE_VERSION=2.4.6
+VTK_VERSION=5.0.2
+HDF5_VERSION=1.6.5
+PYRO_VERSION=3.6-beta2
+PERL_VERSION=5.8.8
+MPICH_VERSION=1.0.5p4
+LIBXML2_VERSION=2.6.27
+GDOME2_VERSION=0.8.1
+FFTW_VERSION=3.1.2
+BOOST_VERSION=1_33_1
+SVN_VERSION=1.4.3
+VIM_VERSION=7.1
+LATEX_TETEX_VERSION=3.0
+LATEX_TEXMF_VERSION=3.0po
+JADETEX_VERSION=3.13
+OPENJADE_VERSION=1.3.2
+OPENSP_VERSION=1.5.2
+XMLTO_VERSION=0.0.18
+GETOPT_VERSION=1.1.4
+GETTEXT_VERSION=0.16.1
+LIBXSLT_VERSION=1.1.20
+ifeq ($(ARCH), osx)
+	BLAST_VERSION=2.2.16-universal-macosx
+else
+	BLAST_VERSION=UNKNOWN
+endif
+R_VERSION=2.5.1
+SCILAB_VERSION=4.1.1
+MATPLOTLIB_VERSION=0.90.1
+ZLIB_VERSION=1.2.3
+LIBPNG_VERSION=1.2.18
+FREETYPE_VERSION=2.3.5
+PKGCONFIG_VERSION=0.22
+GLIB_VERSION=1.2.0
+SOAPPY_VERSION=0.12.0
+FPCONST_VERSION=0.7.2
+MYSQLDB_VERSION=1.2.2
+MYSQL_VERSION=5.1.23-rc
+# <<fold
+# targets fold>> 
+INIT_TARGET=$(BUILD_FLAGS_DIR)/init
+GMP_TARGET=$(BUILD_FLAGS_DIR)/gmp
+MPFR_TARGET=$(BUILD_FLAGS_DIR)/mpfr
+GCC_TARGET=$(BUILD_FLAGS_DIR)/gcc
+LAPACK_TARGET=$(BUILD_FLAGS_DIR)/lapack
+ATLAS_TARGET=$(BUILD_FLAGS_DIR)/atlas
+NUMPY_TARGET=$(BUILD_FLAGS_DIR)/numpy
+SCIPY_TARGET=$(BUILD_FLAGS_DIR)/scipy
+IPYTHON_TARGET=$(BUILD_FLAGS_DIR)/ipython
+QT_TARGET=$(BUILD_FLAGS_DIR)/qt
+QWT_TARGET=$(BUILD_FLAGS_DIR)/qwt
+SIP_TARGET=$(BUILD_FLAGS_DIR)/sip
+PYQT_TARGET=$(BUILD_FLAGS_DIR)/pyqt
+CMAKE_TARGET=$(BUILD_FLAGS_DIR)/cmake
+VTK_TARGET=$(BUILD_FLAGS_DIR)/vtk
+HDF5_TARGET=$(BUILD_FLAGS_DIR)/hdf5
+PYRO_TARGET=$(BUILD_FLAGS_DIR)/pyro
+PERL_TARGET=$(BUILD_FLAGS_DIR)/perl
+MPICH_TARGET=$(BUILD_FLAGS_DIR)/mpich
+LIBXML2_TARGET=$(BUILD_FLAGS_DIR)/libxml2
+GDOME2_TARGET=$(BUILD_FLAGS_DIR)/gdome2
+FFTW_TARGET=$(BUILD_FLAGS_DIR)/fftw
+BOOST_TARGET=$(BUILD_FLAGS_DIR)/boost
+SVN_TARGET=$(BUILD_FLAGS_DIR)/svn
+VIM_TARGET=$(BUILD_FLAGS_DIR)/vim
+LATEX_TARGET=$(BUILD_FLAGS_DIR)/latex
+JADETEX_TARGET=$(BUILD_FLAGS_DIR)/jadetex
+OPENJADE_TARGET=$(BUILD_FLAGS_DIR)/openjade
+OPENSP_TARGET=$(BUILD_FLAGS_DIR)/opensp
+XMLTO_TARGET=$(BUILD_FLAGS_DIR)/xmlto
+GETOPT_TARGET=$(BUILD_FLAGS_DIR)/getopt
+GETTEXT_TARGET=$(BUILD_FLAGS_DIR)/gettext
+LIBXSLT_TARGET=$(BUILD_FLAGS_DIR)/libxslt
+BLAST_TARGET=$(BUILD_FLAGS_DIR)/blast
+R_TARGET=$(BUILD_FLAGS_DIR)/r
+SCILAB_TARGET=$(BUILD_FLAGS_DIR)/scilab
+MATPLOTLIB_TARGET=$(BUILD_FLAGS_DIR)/matplotlib
+ZLIB_TARGET=$(BUILD_FLAGS_DIR)/zlib
+LIBPNG_TARGET=$(BUILD_FLAGS_DIR)/libpng
+FREETYPE_TARGET=$(BUILD_FLAGS_DIR)/freetype
+PKGCONFIG_TARGET=$(BUILD_FLAGS_DIR)/pkgconfig
+GLIB_TARGET=$(BUILD_FLAGS_DIR)/glib
+SOAPPY_TARGET=$(BUILD_FLAGS_DIR)/soappy
+FPCONST_TARGET=$(BUILD_FLAGS_DIR)/fpconst
+MYSQLDB_TARGET=$(BUILD_FLAGS_DIR)/mysqldb
+MYSQL_TARGET=$(BUILD_FLAGS_DIR)/mysql
+# <<fold
+# dependencies fold>>
+GMP_DEPS=
+MPFR_DEPS=$(GMP_TARGET)
+GCC_DEPS=$(GMP_TARGET) $(MPFR_TARGET)
+LAPACK_DEPS=$(GCC_TARGET)
+ATLAS_DEPS=$(GCC_TARGET) $(LAPACK_TARGET)
+NUMPY_DEPS=$(PYTHON_TARGET)
+SCIPY_DEPS=$(PYTHON_TARGET) $(NUMPY_TARGET)
+IPYTHON_DEPS=$(PYTHON_TARGET) $(READLINE_TARGET)
+QT_DEPS=$(GCC_TARGET)
+QWT_DEPS=$(QT_TARGET) $(GCC_TARGET)
+SIP_DEPS=$(PYTHON_TARGET)
+PYQT_DEPS=$(PYTHON_TARGET) $(SIP_TARGET) $(QT_TARGET)
+VTK_DEPS=$(GCC_TARGET) $(PYTHON_TARGET)
+HDF5_DEPS=$(GCC_TARGET)
+PYRO_DEPS=$(PYTHON_TARGET)
+PERL_DEPS=$(GCC_TARGET)
+MPICH_DEPS=$(GCC_TARGET)
+LIBXML2_DEPS=$(GCC_TARGET)
+GDOME2_DEPS=$(GCC_TARGET) $(LIBXML2_TARGET) $(GLIB_TARGET)
+FFTW_DEPS=$(GCC_TARGET) 
+BOOST_DEPS=$(GCC_TARGET) 
+SVN_DEPS=$(GCC_TARGET) 
+VIM_DEPS=$(GCC_TARGET)
+LATEX_DEPS=$(GCC_TARGET)
+JADETEX_DEPS=$(LATEX_TARGET)
+OPENJADE_DEPS=$(GCC_TARGET) $(OPENSP_TARGET)
+OPENSP_DEPS=$(GCC_TARGET) $(XMLTO_TARGET)
+XMLTO_DEPS=$(GCC_TARGET) $(GETOPT_TARGET) $(LIBXSLT_TARGET)
+GETOPT_DEPS=$(GCC_TARGET) $(GETTEXT_TARGET)
+GETTEXT_DEPS=$(GCC_TARGET)
+LIBXSLT_DEPS=$(GCC_TARGET) $(LIBXML2_TARGET)
+BLAST_DEPS=
+R_DEPS=$(GCC_TARGET)
+SCILAB_DEPS=$(GCC_TARGET)
+MATPLOTLIB_DEPS=$(GCC_TARGET) $(ZLIB_TARGET) $(LIBPNG_TARGET) $(WXPYTHON_TARGET)
+ZLIB_DEPS=$(GCC_TARGET)
+LIBPNG_DEPS=$(GCC_TARGET) $(ZLIB_TARGET)
+FREETYPE_DEPS=$(GCC_TARGET)
+PKGCONFIG_DEPS=$(GCC_TARGET)
+FPCONST_DEPS=$(PYTHON_TARGET)
+SOAPPY_DEPS=$(PYTHON_TARGET) $(FPCONST_TARGET)
+MYSQL_DEPS=$(GCC_TARGET)
+MYSQLDB_DEPS=$(PYTHON_TARGET) $(MYSQL_TARGET)
+# <<fold
+
+##### here start the rules 
+# INIT fold>> 
+$(INIT_TARGET): 
+	-mkdir -p $(DOWNLOAD_DIR)
+	-mkdir -p $(UNPACK_DIR)
+	-mkdir -p $(RUNTIME_DIR)
+	-mkdir -p $(BUILD_FLAGS_DIR)
+	-mkdir -p $(BUILD_LOGS_DIR)
+	-mkdir -p $(OPT_DIR)
+	touch $(INIT_TARGET)
+# <<fold	
+# GMP fold>>
+GMP_PACKAGE=gmp-$(GMP_VERSION).tar.bz2
+GMP_PACKAGE_URL=ftp://ftp.gnu.org/gnu/gmp/$(GMP_PACKAGE)
+
+gmp: $(GMP_TARGET)
+gmp-download: $(DOWNLOAD_DIR)/$(GMP_PACKAGE)
+	
+$(GMP_TARGET): $(INIT_TARGET) $(GMP_DEPS) $(DOWNLOAD_DIR)/$(GMP_PACKAGE) 
+	-rm -rf $(UNPACK_DIR)/gmp-$(GMP_VERSION)
+	
+	tar -m -C $(UNPACK_DIR) -xjvf $(DOWNLOAD_DIR)/$(GMP_PACKAGE) 
+	cd $(UNPACK_DIR)/gmp-$(GMP_VERSION)/ && ./configure --prefix=$(RUNTIME_DIR) 
+	cd $(UNPACK_DIR)/gmp-$(GMP_VERSION)/ && make && make install 
+	touch $(GMP_TARGET)
+
+
+$(DOWNLOAD_DIR)/$(GMP_PACKAGE): $(INIT_TARGET)
+	$(WGET) -P $(DOWNLOAD_DIR) $(GMP_PACKAGE_URL)
+	touch $@
+	
+ALL_RUNTIME_TARGETS+=$(GMP_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(GMP_PACKAGE)
+#  <<fold
+# MPFR fold>>
+MPFR_PACKAGE=mpfr-$(MPFR_VERSION).tar.bz2
+MPFR_PACKAGE_URL=http://www.mpfr.org/mpfr-$(MPFR_VERSION)/$(MPFR_PACKAGE)
+
+mpfr: $(MPFR_TARGET) 
+mpfr-download: $(DOWNLOAD_DIR)/$(MPFR_PACKAGE)
+
+$(MPFR_TARGET): $(INIT_TARGET) $(MPFR_DEPS) $(DOWNLOAD_DIR)/$(MPFR_PACKAGE) 
+	-rm -rf $(UNPACK_DIR)/mpfr-$(MPFR_VERSION)
+	
+	tar -m -C $(UNPACK_DIR) -xjvf $(DOWNLOAD_DIR)/$(MPFR_PACKAGE)
+	cd $(UNPACK_DIR)/mpfr-$(MPFR_VERSION)/ && ./configure --with-gmp=$(RUNTIME_DIR) --prefix=$(RUNTIME_DIR) && make && make install
+	touch $(MPFR_TARGET)
+
+$(DOWNLOAD_DIR)/$(MPFR_PACKAGE): $(INIT_TARGET)
+	$(WGET) -P $(DOWNLOAD_DIR) $(MPFR_PACKAGE_URL)
+	touch $@
+	
+ALL_RUNTIME_TARGETS+=$(MPFR_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(MPFR_PACKAGE)
+#  <<fold
+# GCC  fold>>
+GCC_CORE_PACKAGE=gcc-core-$(GCC_VERSION).tar.bz2      
+GCC_CPLUSPLUS_PACKAGE=gcc-g++-$(GCC_VERSION).tar.bz2
+GCC_OBJC_PACKAGE=gcc-objc-$(GCC_VERSION).tar.bz2
+GCC_FORTRAN_PACKAGE=gcc-fortran-$(GCC_VERSION).tar.bz2
+
+GCC_CORE_PACKAGE_URL=ftp://gcc.gnu.org/pub/gcc/releases/gcc-$(GCC_VERSION)/$(GCC_CORE_PACKAGE)
+GCC_CPLUSPLUS_PACKAGE_URL=ftp://gcc.gnu.org/pub/gcc/releases/gcc-$(GCC_VERSION)/$(GCC_CPLUSPLUS_PACKAGE)
+GCC_OBJC_PACKAGE_URL=ftp://gcc.gnu.org/pub/gcc/releases/gcc-$(GCC_VERSION)/$(GCC_OBJC_PACKAGE)
+GCC_FORTRAN_PACKAGE_URL=ftp://gcc.gnu.org/pub/gcc/releases/gcc-$(GCC_VERSION)/$(GCC_FORTRAN_PACKAGE)
+
+gcc: $(GCC_TARGET)
+gcc-download: $(DOWNLOAD_DIR)/$(GCC_CORE_PACKAGE) $(DOWNLOAD_DIR)/$(GCC_CPLUSPLUS_PACKAGE) $(DOWNLOAD_DIR)/$(GCC_OBJC_PACKAGE) $(DOWNLOAD_DIR)/$(GCC_FORTRAN_PACKAGE)
+
+$(GCC_TARGET): $(INIT_TARGET) $(GCC_DEPS) $(DOWNLOAD_DIR)/$(GCC_CORE_PACKAGE) $(DOWNLOAD_DIR)/$(GCC_CPLUSPLUS_PACKAGE) $(DOWNLOAD_DIR)/$(GCC_OBJC_PACKAGE) $(DOWNLOAD_DIR)/$(GCC_FORTRAN_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/gcc-$(GCC_VERSION)
+	
+	tar -m -C $(UNPACK_DIR) -xjvf $(DOWNLOAD_DIR)/$(GCC_CORE_PACKAGE)
+	tar -m -C $(UNPACK_DIR) -xjvf $(DOWNLOAD_DIR)/$(GCC_CPLUSPLUS_PACKAGE)
+	tar -m -C $(UNPACK_DIR) -xjvf $(DOWNLOAD_DIR)/$(GCC_OBJC_PACKAGE)
+	tar -m -C $(UNPACK_DIR) -xjvf $(DOWNLOAD_DIR)/$(GCC_FORTRAN_PACKAGE)
+	mkdir $(UNPACK_DIR)/gcc-$(GCC_VERSION)/g95/
+	cd $(UNPACK_DIR)/gcc-$(GCC_VERSION)/g95/ && ../configure --with-mpfr=$(RUNTIME_DIR) --with-gmp=$(RUNTIME_DIR) --prefix=$(RUNTIME_DIR) --enable-languages=c,c++,objc,f95 && make && make install
+	cd $(RUNTIME_DIR)/bin/ && ln -sf gfortran g77
+	cd $(RUNTIME_DIR)/bin/ && ln -sf gfortran g95
+	touch $(GCC_TARGET)
+
+$(DOWNLOAD_DIR)/$(GCC_CORE_PACKAGE) $(DOWNLOAD_DIR)/$(GCC_CPLUSPLUS_PACKAGE) $(DOWNLOAD_DIR)/$(GCC_OBJC_PACKAGE) $(DOWNLOAD_DIR)/$(GCC_FORTRAN_PACKAGE): $(INIT_TARGET)
+	for package in $(GCC_CORE_PACKAGE_URL) $(GCC_CPLUSPLUS_PACKAGE_URL) $(GCC_OBJC_PACKAGE_URL) $(GCC_FORTRAN_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+	
+ALL_RUNTIME_TARGETS+=$(GCC_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(GCC_CORE_PACKAGE) $(DOWNLOAD_DIR)/$(GCC_CPLUSPLUS_PACKAGE) $(DOWNLOAD_DIR)/$(GCC_OBJC_PACKAGE) $(DOWNLOAD_DIR)/$(GCC_FORTRAN_PACKAGE)
+#  <<fold
+# lapack fold>> 
+LAPACK_PACKAGE=lapack-$(LAPACK_VERSION).tgz
+LAPACK_PACKAGE_URL=http://www.netlib.org/lapack/$(LAPACK_PACKAGE)
+
+lapack: $(LAPACK_TARGET)
+lapack-download: $(DOWNLOAD_DIR)/$(LAPACK_PACKAGE)
+
+$(LAPACK_TARGET): $(INIT_TARGET) $(LAPACK_DEPS) $(DOWNLOAD_DIR)/$(LAPACK_PACKAGE) 
+	-rm -rf $(UNPACK_DIR)/lapack-$(LAPACK_VERSION)/
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(LAPACK_PACKAGE)
+	cd $(UNPACK_DIR)/lapack-$(LAPACK_VERSION); \
+	for patch in $(PATCH_DIR)/lapack-$(LAPACK_VERSION)-*; \
+		do patch -p1 < $$patch; \
+	done
+	cd $(UNPACK_DIR)/lapack-$(LAPACK_VERSION); $(COMPILER_PARAMS) make blaslib all
+	cp $(UNPACK_DIR)/lapack-$(LAPACK_VERSION)/*.a $(RUNTIME_DIR)/lib
+	touch $(LAPACK_TARGET)
+
+$(DOWNLOAD_DIR)/$(LAPACK_PACKAGE): $(INIT_TARGET)
+	-mkdir $(DOWNLOAD_DIR)
+	for package in $(LAPACK_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(LAPACK_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(LAPACK_PACKAGE)
+# <<fold
+# atlas fold>> 
+ATLAS_PACKAGE=atlas$(ATLAS_VERSION).tgz
+ATLAS_PACKAGE_URL=http://www.netlib.org/atlas/$(ATLAS_PACKAGE)
+
+ATLAS_ARCH=OSX_UNKNOWNAltiVec
+
+atlas: $(ATLAS_TARGET)
+atlas-download: $(DOWNLOAD_DIR)/$(ATLAS_PACKAGE)
+
+$(ATLAS_TARGET): $(INIT_TARGET) $(ATLAS_DEPS) $(DOWNLOAD_DIR)/$(ATLAS_PACKAGE) 
+	-rm -rf $(UNPACK_DIR)/ATLAS
+	
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(ATLAS_PACKAGE)
+	cd $(UNPACK_DIR)/ATLAS/; \
+	make xconfig; \
+	echo -e "63\ny\ny\n4\ny\n$(ATLAS_ARCH)\n4096\n0\ny\n" | ./xconfig; \
+	make install arch=$(ATLAS_ARCH)
+	#
+	#
+	-mkdir -p $(RUNTIME_DIR)/include
+	-mkdir -p $(RUNTIME_DIR)/lib 
+	cp $(UNPACK_DIR)/ATLAS/include/$(ATLAS_ARCH)/* $(RUNTIME_DIR)/include
+	## aggregate the unoptimized lapack and the optimized routines
+	-rm -rf $(TMP_DIR)
+	-mkdir -p $(TMP_DIR)
+	cd $(TMP_DIR); \
+	cp $(UNPACK_DIR)/ATLAS/lib/$(ATLAS_ARCH)/liblapack.a $(TMP_DIR); \
+	ar x $(TMP_DIR)/liblapack.a; \
+	cp $(RUNTIME_DIR)/lib/liblapack.a $(TMP_DIR)/liblapack.a
+	ar r $(TMP_DIR)/liblapack.a $(TMP_DIR)/*.o; \
+	cp $(TMP_DIR)/liblapack.a $(RUNTIME_DIR)/lib/liblapack.a
+	-rm -rf $(TMP_DIR)
+	touch $(ATLAS_TARGET)
+	
+$(DOWNLOAD_DIR)/$(ATLAS_PACKAGE): $(INIT_TARGET)
+	for package in $(ATLAS_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(ATLAS_TARGET) 
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(ATLAS_PACKAGE)
+# <<fold 
+# numpy fold>>
+NUMPY_PACKAGE=numpy-$(NUMPY_VERSION).tar.gz
+NUMPY_PACKAGE_URL=http://switch.dl.sourceforge.net/sourceforge/numpy/$(NUMPY_PACKAGE)
+
+numpy: $(NUMPY_TARGET)
+numpy-download: $(DOWNLOAD_DIR)/$(NUMPY_PACKAGE)
+
+$(NUMPY_TARGET): $(INIT_TARGET) $(NUMPY_DEPS) $(DOWNLOAD_DIR)/$(NUMPY_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/numpy-$(NUMPY_VERSION)/
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(NUMPY_PACKAGE)
+	cd $(UNPACK_DIR)/numpy-$(NUMPY_VERSION); $(COMPILER_PARAMS) $(RUNTIME_DIR)/bin/python setup.py install --prefix=$(RUNTIME_DIR)
+	touch $(NUMPY_TARGET)
+
+$(DOWNLOAD_DIR)/$(NUMPY_PACKAGE): $(INIT_TARGET)
+	for package in $(NUMPY_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(NUMPY_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(NUMPY_PACKAGE)
+# <<fold
+# scipy fold>>
+SCIPY_PACKAGE=scipy-$(SCIPY_VERSION).tar.gz
+SCIPY_PACKAGE_URL=http://switch.dl.sourceforge.net/sourceforge/scipy/$(SCIPY_PACKAGE)
+
+scipy: $(SCIPY_TARGET)
+scipy-download: $(DOWNLOAD_DIR)/$(SCIPY_PACKAGE)
+
+$(SCIPY_TARGET): $(INIT_TARGET) $(SCIPY_DEPS) $(DOWNLOAD_DIR)/$(SCIPY_PACKAGE) 
+	-rm -rf $(UNPACK_DIR)/scipy-$(SCIPY_VERSION)/
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(SCIPY_PACKAGE)
+	cd $(UNPACK_DIR)/scipy-$(SCIPY_VERSION); export PATH=$(BINS):$$PATH CC=$(RUNTIME_DIR)/bin/gcc PYTHONPATH=$(RUNTIME_DIR)/lib/python2.4/site-packages/; python setup.py install --prefix=$(RUNTIME_DIR)
+	touch $(SCIPY_TARGET)
+
+$(DOWNLOAD_DIR)/$(SCIPY_PACKAGE): $(INIT_TARGET)
+	for package in $(SCIPY_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(SCIPY_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(SCIPY_PACKAGE)
+# <<fold
+# IPython fold>> 
+IPYTHON_PACKAGE=ipython-$(IPYTHON_VERSION).tar.gz
+IPYTHON_PACKAGE_URL=http://ipython.scipy.org/dist/old/$(IPYTHON_PACKAGE)
+
+ipython: $(IPYTHON_TARGET)
+ipython-download: $(DOWNLOAD_DIR)/$(IPYTHON_PACKAGE)
+
+$(IPYTHON_TARGET): $(INIT_TARGET) $(IPYTHON_DEPS) $(DOWNLOAD_DIR)/$(IPYTHON_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/ipython-$(IPYTHON_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(IPYTHON_PACKAGE)
+	cd $(UNPACK_DIR)/ipython-$(IPYTHON_VERSION); $(COMPILER_PARAMS) $(RUNTIME_DIR)/bin/python setup.py install --prefix=$(RUNTIME_DIR)
+	touch $(IPYTHON_TARGET)
+
+$(DOWNLOAD_DIR)/$(IPYTHON_PACKAGE): $(INIT_TARGET)
+	for package in $(IPYTHON_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(IPYTHON_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(IPYTHON_PACKAGE)
+# <<fold
+# QT fold>>
+QT_PACKAGE=qt-$(QT_VERSION).tar.gz
+QT_PACKAGE_URL=ftp://ftp.trolltech.com/qt/source/$(QT_PACKAGE)
+
+qt: $(QT_TARGET)
+qt-download: $(DOWNLOAD_DIR)/$(QT_PACKAGE)
+
+$(QT_TARGET): $(INIT_TARGET) $(QT_DEPS) $(DOWNLOAD_DIR)/$(QT_PACKAGE) 
+	-rm -rf $(UNPACK_DIR)/qt-$(QT_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(QT_PACKAGE)
+	-cd $(UNPACK_DIR)/qt-$(QT_VERSION); \
+	for patch in $(PATCH_DIR)/qt-$(QT_VERSION)-*; \
+		do patch -p1 < $$patch; \
+	done
+	export PATH=/usr/bin/:$$PATH; CC=`which gcc`; cd $(UNPACK_DIR)/qt-$(QT_VERSION)/; echo "yes" | ./configure -no-framework -prefix $(RUNTIME_DIR); make && make install
+	touch $(QT_TARGET)
+
+$(DOWNLOAD_DIR)/$(QT_PACKAGE): $(INIT_TARGET)
+	for package in $(QT_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(QT_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(QT_PACKAGE)
+# <<fold
+# QWT fold>>
+QWT_PACKAGE=qwt-$(QWT_VERSION).tar.bz2
+QWT_PACKAGE_URL=http://dfn.dl.sourceforge.net/sourceforge/qwt/$(QWT_PACKAGE)
+qwt: $(QWT_TARGET)
+qwt-download: $(DOWNLOAD_DIR)/$(QWT_PACKAGE)
+
+$(QWT_TARGET): $(INIT_TARGET) $(QWT_DEPS) $(DOWNLOAD_DIR)/$(QWT_PACKAGE) 
+	-rm -rf $(UNPACK_DIR)/qwt-$(QWT_VERSION)
+	tar -m -C $(UNPACK_DIR) -xjvf $(DOWNLOAD_DIR)/$(QWT_PACKAGE)
+	cd $(UNPACK_DIR)/qwt-$(QWT_VERSION);\
+	for patch in $(PATCH_DIR)/qwt-$(QWT_VERSION)-*; \
+		do patch -p1 < $$patch; \
+	done
+	A=`echo "$(RUNTIME_DIR)"|sed "s/\//\\\\\\\\\//g"` ; cd $(UNPACK_DIR)/qwt-$(QWT_VERSION); cat qwtconfig.pri | sed -e "s/@REPLACED_BY_MAKEFILE@/$$A/" >qwtconfig.pri.tmp; mv qwtconfig.pri.tmp qwtconfig.pri; $(COMPILER_PARAMS) export PATH=$(BINS):$$PATH CC=$(RUNTIME_DIR)/bin/gcc $(COMPILER_PARAMS) qmake PREFIX=$(RUNTIME_DIR) && make && make install 
+
+
+$(DOWNLOAD_DIR)/$(QWT_PACKAGE): $(INIT_TARGET)
+	for package in $(QWT_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(QWT_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(QWT_PACKAGE)
+# <<fold
+
+# SIP fold>>
+SIP_PACKAGE=sip-$(SIP_VERSION).tar.gz
+SIP_PACKAGE_URL=http://www.riverbankcomputing.com/Downloads/sip4/$(SIP_PACKAGE)
+
+sip: $(SIP_TARGET)
+sip-download: $(DOWNLOAD_DIR)/$(SIP_PACKAGE)
+
+$(SIP_TARGET): $(INIT_TARGET) $(SIP_DEPS) $(DOWNLOAD_DIR)/$(SIP_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/sip-$(SIP_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(SIP_PACKAGE)
+	cd $(UNPACK_DIR)/sip-$(SIP_VERSION)/; $(COMPILER_PARAMS) python configure.py -b $(RUNTIME_DIR)/bin -d $(RUNTIME_DIR)/lib/python2.4/site-packages -e $(RUNTIME_DIR)/include/python2.4 -v $(RUNTIME_DIR)/share/sip; make && make install
+	touch $(SIP_TARGET)
+
+$(DOWNLOAD_DIR)/$(SIP_PACKAGE): $(INIT_TARGET)
+	for package in $(SIP_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(SIP_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(SIP_PACKAGE)
+# <<fold
+# PyQT fold>>
+PYQT_PACKAGE=PyQt-$(PYQT_VERSION).tar.gz
+PYQT_PACKAGE_URL=http://www.riverbankcomputing.com/Downloads/PyQt4/GPL/$(PYQT_PACKAGE)
+
+pyqt: $(PYQT_TARGET)
+pyqt-download: $(DOWNLOAD_DIR)/$(PYQT_PACKAGE)
+
+$(PYQT_TARGET): $(INIT_TARGET) $(PYQT_DEPS) $(DOWNLOAD_DIR)/$(PYQT_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/PyQt-$(PYQT_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(PYQT_PACKAGE)
+	cd $(UNPACK_DIR)/PyQt-$(PYQT_VERSION)/; $(COMPILER_PARAMS) echo "yes" |python configure.py -b $(RUNTIME_DIR)/bin -d $(RUNTIME_DIR)/lib/python2.4/site-packages/PyQt4 -v $(RUNTIME_DIR)/share/sip/PyQt4 -l $(RUNTIME_DIR)/include/python2.4/ -m $(RUNTIME_DIR)/lib/python2.4/config; make && make install
+	touch $(PYQT_TARGET)
+
+$(DOWNLOAD_DIR)/$(PYQT_PACKAGE): $(INIT_TARGET)
+	for package in $(PYQT_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(PYQT_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(PYQT_PACKAGE)
+# <<fold
+# CMAKE fold>>
+CMAKE_PACKAGE=cmake-$(CMAKE_VERSION).tar.gz
+CMAKE_PACKAGE_URL=http://www.cmake.org/files/v2.4/$(CMAKE_PACKAGE)
+
+cmake: $(CMAKE_TARGET)
+cmake-download: $(DOWNLOAD_DIR)/$(CMAKE_PACKAGE)
+
+$(CMAKE_TARGET): $(INIT_TARGET) $(CMAKE_DEPS) $(DOWNLOAD_DIR)/$(CMAKE_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/cmake-$(CMAKE_VERSION)/
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(CMAKE_PACKAGE)
+	cd $(UNPACK_DIR)/cmake-$(CMAKE_VERSION)/ && ./configure --prefix=$(RUNTIME_DIR) && make && make install
+	touch $(CMAKE_TARGET)
+$(DOWNLOAD_DIR)/$(CMAKE_PACKAGE): $(INIT_TARGET)
+	for package in $(CMAKE_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(CMAKE_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(CMAKE_PACKAGE)
+# <<fold 
+# VTK fold>>
+VTK_PACKAGE=vtk-$(VTK_VERSION).tar.gz
+VTK_PACKAGE_URL=http://www.vtk.org/files/release/5.0/$(VTK_PACKAGE)
+
+vtk: $(VTK_TARGET)
+vtk-download: $(DOWNLOAD_DIR)/$(VTK_PACKAGE)
+
+$(VTK_TARGET): $(INIT_TARGET) $(VTK_DEPS) $(DOWNLOAD_DIR)/$(VTK_PACKAGE)
+	echo $$LD_LIBRARY_PATH
+	echo $$PATH
+	echo $$CC
+#	-rm -rf $(UNPACK_DIR)/VTK
+#	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(VTK_PACKAGE)
+#	cd $(UNPACK_DIR)/VTK; \
+#	for patch in $(PATCH_DIR)/vtk-$(VTK_VERSION)-*; \
+#		do patch -p1 < $$patch; \
+#	done
+#	-rm -rf $(TMP_DIR)
+#	-mkdir -p $(TMP_DIR)/VTKBuild
+#	cd $(TMP_DIR)/VTKBuild; \
+#	PATH=/usr/bin/:$$PATH; cmake -DPYTHON_INCLUDE_PATH=$(RUNTIME_DIR)/Python.framework/Headers -DVTK_USE_COCOA=ON -DVTK_USE_CARBON=OFF -DBUILD_SHARED_LIBS=ON -DVTK_WRAP_PYTHON=ON -DCMAKE_INSTALL_PREFIX=$(RUNTIME_DIR) $(UNPACK_DIR)/VTK/; make; make install
+#	touch $(VTK_TARGET)
+
+$(DOWNLOAD_DIR)/$(VTK_PACKAGE): $(INIT_TARGET)
+	for package in $(VTK_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(VTK_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(VTK_PACKAGE)
+# <<fold 
+# HDF5 fold>>
+HDF5_PACKAGE=hdf5-$(HDF5_VERSION).tar.gz
+HDF5_PACKAGE_URL=ftp://hdf.ncsa.uiuc.edu/HDF5/current/src/$(HDF5_PACKAGE)
+
+hdf5: $(HDF5_TARGET)
+hdf5-download: $(DOWNLOAD_DIR)/$(HDF5_PACKAGE)
+
+$(HDF5_TARGET): $(INIT_TARGET) $(HDF5_DEPS) $(DOWNLOAD_DIR)/$(HDF5_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/hdf5-$(HDF5_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(HDF5_PACKAGE)
+	-cd $(UNPACK_DIR)/hdf5-$(HDF5_VERSION); \
+	for patch in $(PATCH_DIR)/hdf5-$(HDF5_VERSION)-*; \
+		do patch -p1 < $$patch; \
+	done
+	cd $(UNPACK_DIR)/hdf5-$(HDF5_VERSION)/; $(COMPILER_PARAMS) export F9X=g95; ./configure --enable-fortran --enable-cxx --prefix=$(RUNTIME_DIR) && make && make install
+
+$(DOWNLOAD_DIR)/$(HDF5_PACKAGE): $(INIT_TARGET)
+	for package in $(HDF5_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(HDF5_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(HDF5_PACKAGE)
+# <<fold
+# PyRO fold>>
+PYRO_PACKAGE=Pyro-$(PYRO_VERSION).tar.gz
+PYRO_PACKAGE_URL=http://switch.dl.sourceforge.net/sourceforge/pyro/$(PYRO_PACKAGE)
+
+pyro: $(PYRO_TARGET)
+pyro-download: $(DOWNLOAD_DIR)/$(PYRO_PACKAGE)
+
+$(PYRO_TARGET): $(INIT_TARGET) $(PYRO_DEPS) $(DOWNLOAD_DIR)/$(PYRO_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/Pyro-$(PYRO_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(PYRO_PACKAGE)
+	cd $(UNPACK_DIR)/Pyro-$(PYRO_VERSION); $(COMPILER_PARAMS) echo -e "y\n$(RUNTIME_DIR)\n" | $(RUNTIME_DIR)/bin/python setup.py install
+	touch $(PYRO_TARGET)
+
+$(DOWNLOAD_DIR)/$(PYRO_PACKAGE): $(INIT_TARGET)
+	for package in $(PYRO_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(PYRO_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(PYRO_PACKAGE)
+# <<fold
+# Perl fold>>
+PERL_PACKAGE=perl-$(PERL_VERSION).tar.bz2
+PERL_PACKAGE_URL=ftp://ftp.funet.fi/pub/CPAN/src/$(PERL_PACKAGE)
+
+perl: $(PERL_TARGET)
+perl-download: $(DOWNLOAD_DIR)/$(PERL_PACKAGE)
+
+$(PERL_TARGET): $(INIT_TARGET) $(PERL_DEPS) $(DOWNLOAD_DIR)/$(PERL_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/perl-$(PERL_VERSION)
+	tar -m -C $(UNPACK_DIR) -xjvf $(DOWNLOAD_DIR)/$(PERL_PACKAGE)
+	-cd $(UNPACK_DIR)/perl-$(PERL_VERSION); \
+	for patch in $(PATCH_DIR)/perl-$(PERL_VERSION)-*; \
+		do patch -p1 < $$patch; \
+	done
+	cd $(UNPACK_DIR)/perl-$(PERL_VERSION); $(COMPILER_PARAMS) sh Configure -d -Dprefix=$(RUNTIME_DIR) -Dcc=`which gcc`; make; make install
+	touch $(PERL_TARGET)
+
+$(DOWNLOAD_DIR)/$(PERL_PACKAGE): $(INIT_TARGET)
+	for package in $(PERL_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(PERL_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(PERL_PACKAGE)
+# <<fold
+# MPICH fold>>
+MPICH_PACKAGE=mpich2-$(MPICH_VERSION).tar.gz
+MPICH_PACKAGE_URL=ftp://ftp.mcs.anl.gov/pub/mpi/$(MPICH_PACKAGE)
+
+mpich: $(MPICH_TARGET)
+mpich-download: $(DOWNLOAD_DIR)/$(MPICH_PACKAGE)
+
+$(MPICH_TARGET): $(INIT_TARGET) $(MPICH_DEPS) $(DOWNLOAD_DIR)/$(MPICH_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/mpich2-$(MPICH_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(MPICH_PACKAGE)
+	-cd $(UNPACK_DIR)/mpich2-$(MPICH_VERSION); \
+	cd $(UNPACK_DIR)/mpich2-$(MPICH_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR) --enable-f77 --enable-f90 --enable-cxx; make; make install
+	touch $(MPICH_TARGET)
+
+$(DOWNLOAD_DIR)/$(MPICH_PACKAGE): $(INIT_TARGET)
+	for package in $(MPICH_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(MPICH_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(MPICH_PACKAGE)
+# <<fold
+# libXML2 fold>>
+LIBXML2_PACKAGE=libxml2-$(LIBXML2_VERSION).tar.gz
+LIBXML2_PACKAGE_URL=ftp://xmlsoft.org/libxml2/$(LIBXML2_PACKAGE)
+
+libxml2: $(LIBXML2_TARGET)
+libxml2-download: $(DOWNLOAD_DIR)/$(LIBXML2_PACKAGE)
+
+$(LIBXML2_TARGET): $(INIT_TARGET) $(LIBXML2_DEPS) $(DOWNLOAD_DIR)/$(LIBXML2_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/libxml2-$(LIBXML2_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(LIBXML2_PACKAGE)
+	-cd $(UNPACK_DIR)/libxml2-$(LIBXML2_VERSION); \
+	cd $(UNPACK_DIR)/libxml2-$(LIBXML2_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make; make install
+	touch $(LIBXML2_TARGET)
+
+$(DOWNLOAD_DIR)/$(LIBXML2_PACKAGE): $(INIT_TARGET)
+	for package in $(LIBXML2_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(LIBXML2_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(LIBXML2_PACKAGE)
+# <<fold
+# GDOME2 fold>>
+GDOME2_PACKAGE=gdome2-$(GDOME2_VERSION).tar.gz
+GDOME2_PACKAGE_URL=http://gdome2.cs.unibo.it/tarball/$(GDOME2_PACKAGE)
+
+gdome2: $(GDOME2_TARGET)
+gdome2-download: $(DOWNLOAD_DIR)/$(GDOME2_PACKAGE)
+
+$(GDOME2_TARGET): $(INIT_TARGET) $(GDOME2_DEPS) $(DOWNLOAD_DIR)/$(GDOME2_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/gdome2-$(GDOME2_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(GDOME2_PACKAGE)
+	-cd $(UNPACK_DIR)/gdome2-$(GDOME2_VERSION); \
+	cd $(UNPACK_DIR)/gdome2-$(GDOME2_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make; make install
+	touch $(GDOME2_TARGET)
+
+$(DOWNLOAD_DIR)/$(GDOME2_PACKAGE): $(INIT_TARGET)
+	for package in $(GDOME2_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(GDOME2_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(GDOME2_PACKAGE)
+# <<fold
+# FFTW fold>>
+FFTW_PACKAGE=fftw-$(FFTW_VERSION).tar.gz
+FFTW_PACKAGE_URL=ftp://ftp.fftw.org/pub/fftw/$(FFTW_PACKAGE)
+
+fftw: $(FFTW_TARGET)
+fftw-download: $(DOWNLOAD_DIR)/$(FFTW_PACKAGE)
+
+$(FFTW_TARGET): $(INIT_TARGET) $(FFTW_DEPS) $(DOWNLOAD_DIR)/$(FFTW_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/fftw-$(FFTW_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(FFTW_PACKAGE)
+	-cd $(UNPACK_DIR)/fftw-$(FFTW_VERSION); \
+	cd $(UNPACK_DIR)/fftw-$(FFTW_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make; make install
+	touch $(FFTW_TARGET)
+
+$(DOWNLOAD_DIR)/$(FFTW_PACKAGE): $(INIT_TARGET)
+	for package in $(FFTW_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(FFTW_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(FFTW_PACKAGE)
+# <<fold
+# BOOST fold>>
+BOOST_PACKAGE=boost_$(BOOST_VERSION).tar.gz
+BOOST_PACKAGE_URL=http://switch.dl.sourceforge.net/sourceforge/boost/$(BOOST_PACKAGE)
+
+boost: $(BOOST_TARGET)
+boost-download: $(DOWNLOAD_DIR)/$(BOOST_PACKAGE)
+
+$(BOOST_TARGET): $(INIT_TARGET) $(BOOST_DEPS) $(DOWNLOAD_DIR)/$(BOOST_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/boost_$(BOOST_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(BOOST_PACKAGE)
+	-cd $(UNPACK_DIR)/boost_$(BOOST_VERSION); \
+	cd $(UNPACK_DIR)/boost_$(BOOST_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make; make install
+	touch $(BOOST_TARGET)
+
+$(DOWNLOAD_DIR)/$(BOOST_PACKAGE): $(INIT_TARGET)
+	for package in $(BOOST_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(BOOST_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(BOOST_PACKAGE)
+# <<fold
+# SVN fold>>
+SVN_PACKAGE=subversion-$(SVN_VERSION).tar.bz2
+SVN_DEPS_PACKAGE=subversion-deps-1.4.3.tar.bz2
+
+SVN_PACKAGE_URL=http://subversion.tigris.org/downloads/$(SVN_PACKAGE)
+SVN_DEPS_PACKAGE_URL=http://subversion.tigris.org/downloads/$(SVN_DEPS_PACKAGE)
+
+svn: $(SVN_TARGET)
+svn-download: $(DOWNLOAD_DIR)/$(SVN_DEPS_PACKAGE) $(DOWNLOAD_DIR)/$(SVN_PACKAGE) 
+
+$(SVN_TARGET): $(INIT_TARGET) $(SVN_DEPS) $(DOWNLOAD_DIR)/$(SVN_DEPS_PACKAGE) $(DOWNLOAD_DIR)/$(SVN_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/subversion-$(SVN_VERSION)
+	tar -m -C $(UNPACK_DIR) -xjvf $(DOWNLOAD_DIR)/$(SVN_PACKAGE)
+	tar -m -C $(UNPACK_DIR) -xjvf $(DOWNLOAD_DIR)/$(SVN_DEPS_PACKAGE)
+	cd $(UNPACK_DIR)/subversion-$(SVN_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR) --with-ssl; make; make install
+	touch $(SVN_TARGET)
+
+$(DOWNLOAD_DIR)/$(SVN_DEPS_PACKAGE) $(DOWNLOAD_DIR)/$(SVN_PACKAGE): $(INIT_TARGET)
+	for package in $(SVN_PACKAGE_URL) $(SVN_DEPS_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(SVN_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(SVN_DEPS_PACKAGE) $(DOWNLOAD_DIR)/$(SVN_PACKAGE)
+# <<fold
+# VIM fold>>
+VIM_PACKAGE=vim-$(VIM_VERSION).tar.bz2
+VIM_PACKAGE_URL=ftp://ftp.vim.org/pub/vim/unix/$(VIM_PACKAGE)
+
+vim: $(VIM_TARGET)
+vim-download: $(DOWNLOAD_DIR)/$(VIM_PACKAGE)
+
+$(VIM_TARGET): $(INIT_TARGET) $(VIM_DEPS) $(DOWNLOAD_DIR)/$(VIM_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/vim71
+	tar -m -C $(UNPACK_DIR) -xjvf $(DOWNLOAD_DIR)/$(VIM_PACKAGE)
+	cd $(UNPACK_DIR)/vim71; $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make; make install
+	touch $(VIM_TARGET)
+
+$(DOWNLOAD_DIR)/$(VIM_PACKAGE): $(INIT_TARGET)
+	for package in $(VIM_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(VIM_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(VIM_PACKAGE)
+# <<fold
+# latex fold>>
+
+LATEX_TETEX_PACKAGE=tetex-src-$(LATEX_TETEX_VERSION).tar.gz
+LATEX_TEXMF_PACKAGE=tetex-texmf-$(LATEX_TEXMF_VERSION).tar.gz
+LATEX_TETEX_PACKAGE_URL=ftp://cam.ctan.org/tex-archive/systems/unix/teTeX/current/distrib/$(LATEX_TETEX_PACKAGE)
+LATEX_TEXMF_PACKAGE_URL=ftp://cam.ctan.org/tex-archive/systems/unix/teTeX/current/distrib/$(LATEX_TEXMF_PACKAGE)
+
+latex: $(LATEX_TARGET)
+latex-download: $(DOWNLOAD_DIR)/$(LATEX_TETEX_PACKAGE) $(DOWNLOAD_DIR)/$(LATEX_TEXMF_PACKAGE)
+
+$(LATEX_TARGET): $(INIT_TARGET) $(LATEX_DEPS) $(DOWNLOAD_DIR)/$(LATEX_TETEX_PACKAGE)  $(DOWNLOAD_DIR)/$(LATEX_TEXMF_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/tetex-src-$(LATEX_TETEX_VERSION)
+	-mkdir -p $(RUNTIME_DIR)/share/texmf $(RUNTIME_DIR)/share/texmf-dist
+	tar -m -C $(RUNTIME_DIR)/share/texmf-dist -xzvf $(DOWNLOAD_DIR)/tetex-texmf-$(LATEX_TEXMF_VERSION).tar.gz 
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/tetex-src-$(LATEX_TETEX_VERSION).tar.gz 
+	cd $(UNPACK_DIR)/tetex-src-$(LATEX_TETEX_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR) --disable-multiplatform; make world
+	touch $(LATEX_TARGET)
+#
+$(DOWNLOAD_DIR)/$(LATEX_TETEX_PACKAGE) $(DOWNLOAD_DIR)/$(LATEX_TEXMF_PACKAGE): $(INIT_TARGET)
+	for package in $(LATEX_TETEX_PACKAGE_URL) $(LATEX_TEXMF_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(LATEX_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(LATEX_TETEX_PACKAGE) $(DOWNLOAD_DIR)/$(LATEX_TEXMF_PACKAGE)
+# <<fold
+# openjade fold>>
+OPENJADE_PACKAGE=openjade-$(OPENJADE_VERSION).tar.gz
+OPENJADE_PACKAGE_URL=http://mesh.dl.sourceforge.net/sourceforge/openjade/$(OPENJADE_PACKAGE)
+
+openjade: $(OPENJADE_TARGET)
+openjade-download: $(DOWNLOAD_DIR)/$(OPENJADE_PACKAGE) 
+
+$(OPENJADE_TARGET): $(INIT_TARGET) $(OPENJADE_DEPS) $(DOWNLOAD_DIR)/$(OPENJADE_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/openjade-$(OPENJADE_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(OPENJADE_PACKAGE)
+	cd $(UNPACK_DIR)/openjade-$(OPENJADE_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make ; make install
+	touch $(OPENJADE_TARGET)
+
+$(DOWNLOAD_DIR)/$(OPENJADE_PACKAGE): $(INIT_TARGET)
+	for package in $(OPENJADE_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(OPENJADE_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(OPENJADE_PACKAGE)
+# <<fold
+# opensp fold>>
+OPENSP_PACKAGE=OpenSP-$(OPENSP_VERSION).tar.gz
+OPENSP_PACKAGE_URL=http://mesh.dl.sourceforge.net/sourceforge/openjade/$(OPENSP_PACKAGE)
+
+opensp: $(OPENSP_TARGET)
+opensp-download: $(DOWNLOAD_DIR)/$(OPENSP_PACKAGE) 
+
+$(OPENSP_TARGET): $(INIT_TARGET) $(OPENSP_DEPS) $(DOWNLOAD_DIR)/$(OPENSP_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/OpenSP-$(OPENSP_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(OPENSP_PACKAGE)
+	cd $(UNPACK_DIR)/OpenSP-$(OPENSP_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make ; make install
+	touch $(OPENSP_TARGET)
+
+$(DOWNLOAD_DIR)/$(OPENSP_PACKAGE): $(INIT_TARGET)
+	for package in $(OPENSP_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(OPENSP_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(OPENSP_PACKAGE)
+# <<fold
+# xmlto fold>>
+XMLTO_PACKAGE=xmlto-$(XMLTO_VERSION).tar.bz2
+XMLTO_PACKAGE_URL=http://cyberelk.net/tim/data/xmlto/stable/$(XMLTO_PACKAGE)
+
+xmlto: $(XMLTO_TARGET)
+xmlto-download: $(DOWNLOAD_DIR)/$(XMLTO_PACKAGE) 
+
+$(XMLTO_TARGET): $(INIT_TARGET) $(XMLTO_DEPS) $(DOWNLOAD_DIR)/$(XMLTO_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/xmlto-$(XMLTO_VERSION)
+	tar -m -C $(UNPACK_DIR) -xjvf $(DOWNLOAD_DIR)/$(XMLTO_PACKAGE)
+	cd $(UNPACK_DIR)/xmlto-$(XMLTO_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make ; make install
+	touch $(XMLTO_TARGET)
+
+$(DOWNLOAD_DIR)/$(XMLTO_PACKAGE): $(INIT_TARGET)
+	for package in $(XMLTO_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(XMLTO_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(XMLTO_PACKAGE)
+# <<fold
+# getopt fold>>
+GETOPT_PACKAGE=getopt-$(GETOPT_VERSION).tar.gz
+GETOPT_PACKAGE_URL=http://software.frodo.looijaard.name/getopt/files/$(GETOPT_PACKAGE)
+
+getopt: $(GETOPT_TARGET)
+getopt-download: $(DOWNLOAD_DIR)/$(GETOPT_PACKAGE) 
+
+$(GETOPT_TARGET): $(INIT_TARGET) $(GETOPT_DEPS) $(DOWNLOAD_DIR)/$(GETOPT_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/getopt-$(GETOPT_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(GETOPT_PACKAGE)
+	-cd $(UNPACK_DIR)/getopt-$(GETOPT_VERSION); \
+	for patch in $(PATCH_DIR)/getopt-$(GETOPT_VERSION)-*; \
+		do patch -p1 < $$patch; \
+	done
+	cd $(UNPACK_DIR)/getopt-$(GETOPT_VERSION); $(COMPILER_PARAMS) export LDFLAGS="$$LDFLAGS -lintl" getopt_prefix=$(RUNTIME_DIR);  make ; make install
+	touch $(GETOPT_TARGET)
+
+$(DOWNLOAD_DIR)/$(GETOPT_PACKAGE): $(INIT_TARGET)
+	for package in $(GETOPT_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(GETOPT_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(GETOPT_PACKAGE)
+# <<fold
+# gettext fold>>
+GETTEXT_PACKAGE=gettext-$(GETTEXT_VERSION).tar.gz
+GETTEXT_PACKAGE_URL=http://ftp.download-by.net/gnu/gnu/gettext/$(GETTEXT_PACKAGE)
+
+gettext: $(GETTEXT_TARGET)
+gettext-download: $(DOWNLOAD_DIR)/$(GETTEXT_PACKAGE) 
+
+$(GETTEXT_TARGET): $(INIT_TARGET) $(GETTEXT_DEPS) $(DOWNLOAD_DIR)/$(GETTEXT_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/gettext-$(GETTEXT_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(GETTEXT_PACKAGE)
+	cd $(UNPACK_DIR)/gettext-$(GETTEXT_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR) ; make ; make install
+	touch $(GETTEXT_TARGET)
+
+$(DOWNLOAD_DIR)/$(GETTEXT_PACKAGE): $(INIT_TARGET)
+	for package in $(GETTEXT_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(GETTEXT_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(GETTEXT_PACKAGE)
+# <<fold
+# libXSLT fold>>
+LIBXSLT_PACKAGE=libxslt-$(LIBXSLT_VERSION).tar.bz2
+LIBXSLT_PACKAGE_URL=ftp://xmlsoft.org/libxslt/$(LIBXSLT_PACKAGE)
+
+libxslt: $(LIBXSLT_TARGET)
+libxslt-download: $(DOWNLOAD_DIR)/$(LIBXSLT_PACKAGE)
+
+$(LIBXSLT_TARGET): $(INIT_TARGET) $(LIBXSLT_DEPS) $(DOWNLOAD_DIR)/$(LIBXSLT_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/libxslt-$(LIBXSLT_VERSION)
+	tar -m -C $(UNPACK_DIR) -xjvf $(DOWNLOAD_DIR)/$(LIBXSLT_PACKAGE)
+	cd $(UNPACK_DIR)/libxslt-$(LIBXSLT_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make; make install
+	touch $(LIBXSLT_TARGET)
+
+$(DOWNLOAD_DIR)/$(LIBXSLT_PACKAGE): $(INIT_TARGET)
+	for package in $(LIBXSLT_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(LIBXSLT_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(LIBXSLT_PACKAGE)
+# <<fold
+# blast fold>>
+BLAST_PACKAGE=blast-$(BLAST_VERSION).tar.gz
+BLAST_PACKAGE_URL=ftp://ftp.ncbi.nih.gov/blast/executables/LATEST/$(BLAST_PACKAGE)
+
+blast: $(BLAST_TARGET)
+blast-download: $(DOWNLOAD_DIR)/$(BLAST_PACKAGE) 
+
+$(BLAST_TARGET): $(INIT_TARGET) $(BLAST_DEPS) $(DOWNLOAD_DIR)/$(BLAST_PACKAGE)
+	-rm -rf $(OPT_DIR)/blast-*
+	tar -m -C $(OPT_DIR) -xzvf $(DOWNLOAD_DIR)/$(BLAST_PACKAGE)
+	touch $(BLAST_TARGET)
+
+$(DOWNLOAD_DIR)/$(BLAST_PACKAGE): $(INIT_TARGET)
+	for package in $(BLAST_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) --passive -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(BLAST_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(BLAST_PACKAGE)
+# <<fold
+# zlib fold>> 
+ZLIB_PACKAGE=zlib-$(ZLIB_VERSION).tar.gz
+ZLIB_PACKAGE_URL=http://www.gzip.org/zlib/$(ZLIB_PACKAGE)
+
+zlib: $(ZLIB_TARGET)
+zlib-download: $(DOWNLOAD_DIR)/$(ZLIB_PACKAGE)
+
+$(ZLIB_TARGET): $(INIT_TARGET) $(ZLIB_DEPS) $(DOWNLOAD_DIR)/$(ZLIB_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/zlib-$(ZLIB_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(ZLIB_PACKAGE)
+	cd $(UNPACK_DIR)/zlib-$(ZLIB_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR) --shared; make; make install
+	touch $(ZLIB_TARGET)
+
+$(DOWNLOAD_DIR)/$(ZLIB_PACKAGE): $(INIT_TARGET)
+	for package in $(ZLIB_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(ZLIB_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(ZLIB_PACKAGE)
+# <<fold
+# libpng fold>> 
+LIBPNG_PACKAGE=libpng-$(LIBPNG_VERSION).tar.gz
+LIBPNG_PACKAGE_URL=http://surfnet.dl.sourceforge.net/sourceforge/libpng/$(LIBPNG_PACKAGE)
+
+libpng: $(LIBPNG_TARGET)
+libpng-download: $(DOWNLOAD_DIR)/$(LIBPNG_PACKAGE)
+
+$(LIBPNG_TARGET): $(INIT_TARGET) $(LIBPNG_DEPS) $(DOWNLOAD_DIR)/$(LIBPNG_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/libpng-$(LIBPNG_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(LIBPNG_PACKAGE)
+	cd $(UNPACK_DIR)/libpng-$(LIBPNG_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make; make install
+	touch $(LIBPNG_TARGET)
+
+$(DOWNLOAD_DIR)/$(LIBPNG_PACKAGE): $(INIT_TARGET)
+	for package in $(LIBPNG_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(LIBPNG_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(LIBPNG_PACKAGE)
+# <<fold
+# freetype fold>> 
+FREETYPE_PACKAGE=freetype-$(FREETYPE_VERSION).tar.gz
+FREETYPE_PACKAGE_URL=http://surfnet.dl.sourceforge.net/sourceforge/freetype/$(FREETYPE_PACKAGE)
+
+freetype: $(FREETYPE_TARGET)
+freetype-download: $(DOWNLOAD_DIR)/$(FREETYPE_PACKAGE)
+
+$(FREETYPE_TARGET): $(INIT_TARGET) $(FREETYPE_DEPS) $(DOWNLOAD_DIR)/$(FREETYPE_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/freetype-$(FREETYPE_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(FREETYPE_PACKAGE)
+	cd $(UNPACK_DIR)/freetype-$(FREETYPE_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make; make install
+	touch $(FREETYPE_TARGET)
+
+$(DOWNLOAD_DIR)/$(FREETYPE_PACKAGE): $(INIT_TARGET)
+	for package in $(FREETYPE_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(FREETYPE_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(FREETYPE_PACKAGE)
+# <<fold
+# matplotlib fold>> 
+MATPLOTLIB_PACKAGE=matplotlib-$(MATPLOTLIB_VERSION).tar.gz
+MATPLOTLIB_PACKAGE_URL=http://belnet.dl.sourceforge.net/sourceforge/matplotlib/$(MATPLOTLIB_PACKAGE)
+
+matplotlib: $(MATPLOTLIB_TARGET)
+matplotlib-download: $(DOWNLOAD_DIR)/$(MATPLOTLIB_PACKAGE)
+
+$(MATPLOTLIB_TARGET): $(INIT_TARGET) $(MATPLOTLIB_DEPS) $(DOWNLOAD_DIR)/$(MATPLOTLIB_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/matplotlib-$(MATPLOTLIB_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(MATPLOTLIB_PACKAGE)
+	cd $(UNPACK_DIR)/matplotlib-$(MATPLOTLIB_VERSION); \
+	for patch in $(PATCH_DIR)/matplotlib-$(MATPLOTLIB_VERSION)-*; \
+		do patch -p1 < $$patch; \
+	done
+	A=`echo "$(RUNTIME_DIR)"|sed "s/\//\\\\\\\\\//g"` ; cd $(UNPACK_DIR)/matplotlib-$(MATPLOTLIB_VERSION); cat setupext.py | sed -e "s/@REPLACED_BY_MAKEFILE@/$$A/" >setupext.py.tmp; mv setupext.py.tmp setupext.py; $(COMPILER_PARAMS) $(RUNTIME_DIR)/bin/python setup.py install --prefix=$(RUNTIME_DIR)
+	#touch $(MATPLOTLIB_TARGET)
+
+$(DOWNLOAD_DIR)/$(MATPLOTLIB_PACKAGE): $(INIT_TARGET)
+	for package in $(MATPLOTLIB_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(MATPLOTLIB_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(MATPLOTLIB_PACKAGE)
+# <<fold
+# pkgconfig fold>>
+PKGCONFIG_PACKAGE=pkg-config-$(PKGCONFIG_VERSION).tar.gz
+PKGCONFIG_PACKAGE_URL=http://pkgconfig.freedesktop.org/releases/$(PKGCONFIG_PACKAGE)
+
+pkgconfig: $(PKGCONFIG_TARGET)
+pkgconfig-download: $(DOWNLOAD_DIR)/$(PKGCONFIG_PACKAGE)
+
+$(PKGCONFIG_TARGET): $(INIT_TARGET) $(PKGCONFIG_DEPS) $(DOWNLOAD_DIR)/$(PKGCONFIG_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/pkg-config-$(PKGCONFIG_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(PKGCONFIG_PACKAGE)
+	cd $(UNPACK_DIR)/pkg-config-$(PKGCONFIG_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make; make install
+	touch $(PKGCONFIG_TARGET)
+
+$(DOWNLOAD_DIR)/$(PKGCONFIG_PACKAGE): $(INIT_TARGET)
+	for package in $(PKGCONFIG_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(PKGCONFIG_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(PKGCONFIG_PACKAGE)
+# <<fold
+# glib fold>> 
+GLIB_PACKAGE=glib-$(GLIB_VERSION).tar.gz
+GLIB_PACKAGE_URL=ftp://ftp.gtk.org/pub/gtk/v1.2/$(GLIB_PACKAGE)
+
+glib: $(GLIB_TARGET)
+glib-download: $(DOWNLOAD_DIR)/$(GLIB_PACKAGE)
+
+$(GLIB_TARGET): $(INIT_TARGET) $(GLIB_DEPS) $(DOWNLOAD_DIR)/$(GLIB_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/glib-$(GLIB_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(GLIB_PACKAGE)
+	cd $(UNPACK_DIR)/glib-$(GLIB_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make; make install
+	touch $(GLIB_TARGET)
+
+$(DOWNLOAD_DIR)/$(GLIB_PACKAGE): $(INIT_TARGET)
+	for package in $(GLIB_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(GLIB_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(GLIB_PACKAGE)
+# <<fold
+
+# soappy fold>> 
+SOAPPY_PACKAGE=SOAPpy-$(SOAPPY_VERSION).tar.gz
+SOAPPY_PACKAGE_URL=http://ovh.dl.sourceforge.net/sourceforge/pywebsvcs/$(SOAPPY_PACKAGE)
+
+soappy: $(SOAPPY_TARGET)
+soappy-download: $(DOWNLOAD_DIR)/$(SOAPPY_PACKAGE)
+
+$(SOAPPY_TARGET): $(INIT_TARGET) $(SOAPPY_DEPS) $(DOWNLOAD_DIR)/$(SOAPPY_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/SOAPpy-$(SOAPPY_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(SOAPPY_PACKAGE)
+	cd $(UNPACK_DIR)/SOAPpy-$(SOAPPY_VERSION); $(COMPILER_PARAMS) $(RUNTIME_DIR)/bin/python setup.py install --prefix=$(RUNTIME_DIR)
+	touch $(SOAPPY_TARGET)
+
+$(DOWNLOAD_DIR)/$(SOAPPY_PACKAGE): $(INIT_TARGET)
+	for package in $(SOAPPY_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(SOAPPY_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(SOAPPY_PACKAGE)
+# <<fold
+# fpconst fold>> 
+FPCONST_PACKAGE=fpconst-$(FPCONST_VERSION).tar.gz
+FPCONST_PACKAGE_URL=http://pypi.python.org/packages/source/f/fpconst/$(FPCONST_PACKAGE)
+
+fpconst: $(FPCONST_TARGET)
+fpconst-download: $(DOWNLOAD_DIR)/$(FPCONST_PACKAGE)
+
+$(FPCONST_TARGET): $(INIT_TARGET) $(FPCONST_DEPS) $(DOWNLOAD_DIR)/$(FPCONST_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/fpconst-$(FPCONST_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(FPCONST_PACKAGE)
+	cd $(UNPACK_DIR)/fpconst-$(FPCONST_VERSION); $(COMPILER_PARAMS) $(RUNTIME_DIR)/bin/python setup.py install --prefix=$(RUNTIME_DIR)
+	touch $(FPCONST_TARGET)
+
+$(DOWNLOAD_DIR)/$(FPCONST_PACKAGE): $(INIT_TARGET)
+	for package in $(FPCONST_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(FPCONST_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(FPCONST_PACKAGE)
+# <<fold
+# MySQLdb fold>> 
+MYSQLDB_PACKAGE=MySQL-python-$(MYSQLDB_VERSION).tar.gz
+MYSQLDB_PACKAGE_URL=http://ovh.dl.sourceforge.net/sourceforge/mysql-python/$(MYSQLDB_PACKAGE)
+
+mysqldb: $(MYSQLDB_TARGET)
+mysqldb-download: $(DOWNLOAD_DIR)/$(MYSQLDB_PACKAGE)
+
+$(MYSQLDB_TARGET): $(INIT_TARGET) $(MYSQLDB_DEPS) $(DOWNLOAD_DIR)/$(MYSQLDB_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/MySQL-python-$(MYSQLDB_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(MYSQLDB_PACKAGE)
+	cd $(UNPACK_DIR)/MySQL-python-$(MYSQLDB_VERSION); $(COMPILER_PARAMS) $(RUNTIME_DIR)/bin/python setup.py install --prefix=$(RUNTIME_DIR)
+	touch $(MYSQLDB_TARGET)
+
+$(DOWNLOAD_DIR)/$(MYSQLDB_PACKAGE): $(INIT_TARGET)
+	for package in $(MYSQLDB_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(MYSQLDB_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(MYSQLDB_PACKAGE)
+# <<fold
+# MySQL fold>> 
+MYSQL_PACKAGE=mysql-$(MYSQL_VERSION).tar.gz
+MYSQL_PACKAGE_URL=ftp://mirror2.dataphone.se/pub/mysql/Downloads/MySQL-5.1/$(MYSQL_PACKAGE)
+
+mysql: $(MYSQL_TARGET)
+mysql-download: $(DOWNLOAD_DIR)/$(MYSQL_PACKAGE)
+
+$(MYSQL_TARGET): $(INIT_TARGET) $(MYSQL_DEPS) $(DOWNLOAD_DIR)/$(MYSQL_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/mysql-$(MYSQL_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(MYSQL_PACKAGE)
+	cd $(UNPACK_DIR)/mysql-$(MYSQL_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make; make install
+	touch $(MYSQL_TARGET)
+
+$(DOWNLOAD_DIR)/$(MYSQL_PACKAGE): $(INIT_TARGET)
+	for package in $(MYSQL_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(MYSQL_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(MYSQL_PACKAGE)
+# <<fold
+# TODO
+# unum fold>>
+UNUM_VERSION=4.0
+UNUM_PACKAGE=Unum-$(UNUM_VERSION).tar.gz
+UNUM_PACKAGE_URL=http://switch.dl.sourceforge.net/sourceforge/unum/$(UNUM_PACKAGE)
+
+unum-download:
+	-mkdir $(DOWNLOAD_DIR)
+	for package in $(UNUM_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+# <<fold
+# jadetex fold>>
+JADETEX_PACKAGE=jadetex-$(JADETEX_VERSION).tar.gz
+JADETEX_PACKAGE_URL=http://mesh.dl.sourceforge.net/sourceforge/jadetex/$(JADETEX_PACKAGE)
+
+jadetex: $(JADETEX_TARGET)
+jadetex-download: $(DOWNLOAD_DIR)/$(JADETEX_PACKAGE) 
+
+$(JADETEX_TARGET): $(INIT_TARGET) $(JADETEX_DEPS) $(DOWNLOAD_DIR)/$(JADETEX_PACKAGE)
+	-rm -rf $(UNPACK_DIR)/jadetex-$(JADETEX_VERSION)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(JADETEX_PACKAGE)
+	cd $(UNPACK_DIR)/jadetex-$(JADETEX_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR); make ; make install
+	touch $(JADETEX_TARGET)
+
+$(DOWNLOAD_DIR)/$(JADETEX_PACKAGE): $(INIT_TARGET)
+	for package in $(JADETEX_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(JADETEX_TARGET)
+# <<fold
+# SCILAB fold>>
+SCILAB_PACKAGE=scilab-$(SCILAB_VERSION)-src.tar.gz
+SCILAB_PACKAGE_URL=http://www.scilab.org/download/4.1.1/$(SCILAB_PACKAGE)
+
+scilab: $(SCILAB_TARGET)
+scilab-download: $(DOWNLOAD_DIR)/$(SCILAB_PACKAGE) 
+
+#$(SCILAB_TARGET): $(INIT_TARGET) $(SCILAB_DEPS) $(DOWNLOAD_DIR)/$(SCILAB_PACKAGE)
+	#-rm -rf $(UNPACK_DIR)/gettext-$(SCILAB_VERSION)
+	#tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(SCILAB_PACKAGE)
+	#cd $(UNPACK_DIR)/gettext-$(SCILAB_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR) ; make ; make install
+	#touch $(SCILAB_TARGET)
+
+$(DOWNLOAD_DIR)/$(SCILAB_PACKAGE): $(INIT_TARGET)
+	for package in $(SCILAB_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(SCILAB_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(SCILAB_PACKAGE)
+# <<fold
+# R fold>>
+R_PACKAGE=R-$(R_VERSION).tar.gz
+R_PACKAGE_URL= http://mirrors.dotsrc.org/cran/src/base/R-2/$(R_PACKAGE)
+
+r: $(R_TARGET)
+r-download: $(DOWNLOAD_DIR)/$(R_PACKAGE) 
+
+#$(R_TARGET): $(INIT_TARGET) $(R_DEPS) $(DOWNLOAD_DIR)/$(R_PACKAGE)
+	#-rm -rf $(UNPACK_DIR)/gettext-$(R_VERSION)
+	#tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(R_PACKAGE)
+	#cd $(UNPACK_DIR)/gettext-$(R_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR) ; make ; make install
+	#touch $(R_TARGET)
+
+$(DOWNLOAD_DIR)/$(R_PACKAGE): $(INIT_TARGET)
+	for package in $(R_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+	touch $@
+
+ALL_RUNTIME_TARGETS+=$(R_TARGET)
+ALL_DOWNLOAD_TARGETS+=$(DOWNLOAD_DIR)/$(R_PACKAGE)
+# <<fold
+#biopython
+
+# no longer used
+# G95 fold>>
+G95_VERSION=0.91
+G95_PACKAGE=g95_source.tgz
+G95_PACKAGE_URL=http://ftp.g95.org/$(G95_PACKAGE)
+
+LIBF95_VERSION=0.91
+LIBF95_PACKAGE=libf95.a-$(LIBF95_VERSION).tar.gz
+
+g95: 
+	-rm -rf $(UNPACK_DIR)/g95-$(G95_VERSION)/
+	-mkdir $(UNPACK_DIR)
+	tar -m -C $(UNPACK_DIR) -xzvf $(DOWNLOAD_DIR)/$(G95_PACKAGE)
+	cd $(UNPACK_DIR)/g95-$(G95_VERSION)/; $(COMPILER_PARAMS) $(UNPACK_DIR)/g95-$(G95_VERSION)/configure --prefix=$(RUNTIME_DIR) --with-gcc-dir=$(UNPACK_DIR)/gcc-$(GCC_VERSION) && make && make install
+	cd $(UNPACK_DIR)/g95-$(G95_VERSION)/; tar -m -xzvf $(LIBF95_PACKAGE); cd libf95.a-$(LIBF95_VERSION); $(COMPILER_PARAMS) ./configure --prefix=$(RUNTIME_DIR) --with-gcc-dir=$(UNPACK_DIR)/gcc-$(GCC_VERSION) && make && make install
+	cd $(RUNTIME_DIR)/bin; ln -s *-g95 g95
+
+g95-download:
+	-mkdir $(DOWNLOAD_DIR)
+	for package in $(G95_PACKAGE_URL); \
+	do \
+		echo -n "Downloading $$package... ";  \
+		$(WGET) -P $(DOWNLOAD_DIR) $$package; \
+		echo "done"; \
+	done
+# <<fold
+
+clean:
+	-rm -rf $(TMP_DIR) $(UNPACK_DIR)
+
+everything: $(ALL_RUNTIME_TARGETS)
+download_everything: $(ALL_DOWNLOAD_TARGETS)
+
+distclean: clean
+	-rm -rf $(RUNTIME_DIR)
+packageclean: 
+	-rm -rf $(DOWNLOAD_DIR)

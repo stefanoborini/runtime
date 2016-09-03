@@ -1,0 +1,51 @@
+diff -Naur hdf5-1.6.5/fortran/config/powerpc-apple hdf5-1.6.5.new/fortran/config/powerpc-apple
+--- hdf5-1.6.5/fortran/config/powerpc-apple	2005-10-31 18:29:40.000000000 +0100
++++ hdf5-1.6.5.new/fortran/config/powerpc-apple	2006-12-17 15:50:48.000000000 +0100
+@@ -32,8 +32,8 @@
+ if test "X-" = "X-$F9X"; then
+     F9X=xlf
+     F9X_BASENAME=xlf
+-  else
+-    F9X_BASENAME=f95
++else
++    F9X_BASENAME=`basename $F9X`
+ fi
+ 
+ #
+@@ -63,6 +63,18 @@
+         PROFILE_FFLAGS="-g -pg"
+         f9x_flags_set=yes
+         ;;
++    g95)
++        # Set required flag for compiling C stubs
++        CFLAGS="$CFLAGS -DH5_G95"
++        
++        F9XSUFFIXFLAG=""
++        FFLAGS="$FFLAGS -O"
++        FSEARCH_DIRS=""
++        DEBUG_FFLAGS="-g"
++        PROD_FFLAGS="-O"
++        PROFILE_FFLAGS="-g"
++        f9x_flags_set=yes
++        ;;
+ 
+     #
+     # Assume Absoft compiler
+diff -Naur hdf5-1.6.5/fortran/src/H5f90i.h hdf5-1.6.5.new/fortran/src/H5f90i.h
+--- hdf5-1.6.5/fortran/src/H5f90i.h	2005-10-06 00:14:02.000000000 +0200
++++ hdf5-1.6.5.new/fortran/src/H5f90i.h	2006-12-17 16:15:32.000000000 +0100
+@@ -62,10 +62,12 @@
+ typedef int               int_f;
+ typedef int               hid_t_f;
+ typedef float             real_f;
+-#define FNAME(x) x
+ #if defined H5_ABSOFT
+ #define DF_CAPFNAMES
+-#endif /*H5_ABSOFT*/
++#elif defined H5_G95
++#define FNAME_POST_UNDERSCORE
++/*#define FNAME_POST2_UNDERSCORE*/
++#endif 
+ #define _fcdtocp(desc) (desc)
+ 
+ #endif /*APPLE*/

@@ -1,0 +1,20 @@
+ARCH=i686-apple-darwin10
+
+THIS_DIR=$(PWD)
+PATCH_DIR=$(THIS_DIR)/patch
+RUNTIME_DIR=$(THIS_DIR)/runtime
+TMP_DIR=$(RUNTIME_DIR)/__tmp
+UNPACK_DIR=$(RUNTIME_DIR)/__unpack
+BUILD_FLAGS_DIR=$(RUNTIME_DIR)/buildflags
+BUILD_LOGS_DIR=$(RUNTIME_DIR)/buildlogs
+DOWNLOAD_DIR=$(RUNTIME_DIR)/download
+OPT_DIR=$(RUNTIME_DIR)/opt
+MANUAL_INSTALL=$(RUNTIME_DIR)/manual_install
+
+LIBS=-L$(RUNTIME_DIR)/lib
+INCLUDES=-I$(RUNTIME_DIR)/include
+BINS=$(RUNTIME_DIR)/bin
+
+COMPILER_PARAMS=export PATH=$(BINS):$$PATH LDFLAGS="$(LIBS):$(LDFLAGS)" CPPFLAGS="$(INCLUDES):$(CPPFLAGS)" PYTHONPATH=$(RUNTIME_DIR)/lib/python2.4/site-packages/;
+WGET=wget -nc --passive-ftp --progress=dot
+

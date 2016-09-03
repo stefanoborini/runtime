@@ -1,0 +1,18 @@
+diff -Naur qt-mac-opensource-src-4.2.1/src/qbase.pri qt-mac-opensource-src-4.2.1.new/src/qbase.pri
+--- qt-mac-opensource-src-4.2.1/src/qbase.pri	2006-10-20 17:46:41.000000000 +0200
++++ qt-mac-opensource-src-4.2.1.new/src/qbase.pri	2006-12-14 23:52:08.000000000 +0100
+@@ -66,10 +66,10 @@
+ mac {
+    CONFIG += explicitlib
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.2 #enables weak linking for 10.2 (exported)
+-   macx-g++ {
+-       QMAKE_CFLAGS += -fconstant-cfstrings
+-       QMAKE_CXXFLAGS += -fconstant-cfstrings
+-   }
++#   macx-g++ {
++#       QMAKE_CFLAGS += -fconstant-cfstrings
++#       QMAKE_CXXFLAGS += -fconstant-cfstrings
++#   }
+ }
+ 
+ win32:!shared:CONFIG += static

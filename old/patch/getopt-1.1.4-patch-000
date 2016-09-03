@@ -1,0 +1,100 @@
+diff -Naur getopt-1.1.4/Makefile getopt-1.1.4.new/Makefile
+--- getopt-1.1.4/Makefile	2005-11-07 23:32:46.000000000 +0100
++++ getopt-1.1.4.new/Makefile	2007-05-27 08:59:29.000000000 +0200
+@@ -1,7 +1,6 @@
+ .SUFFIXES:
+ 
+-DESTDIR=
+-prefix=/usr/local
++prefix=$$getopt_prefix
+ bindir=$(prefix)/bin
+ mandir=$(prefix)/man
+ man1dir=$(mandir)/man1
+@@ -13,17 +12,6 @@
+ # Define this to 0 to use the getopt(3) routines in this package.
+ LIBCGETOPT=1
+ 
+-# Define this to 1 if you do not have the gettext routines
+-WITHOUT_GETTEXT=0
+-
+-# For creating the archive
+-PACKAGE=getopt
+-VERSION=1.1.4
+-BASENAME=$(PACKAGE)-$(VERSION)
+-UNLIKELYNAME=a8vwjfd92
+-
+-SHELL=/bin/sh
+-
+ CC=gcc
+ LD=ld
+ RM=rm -f
+@@ -33,7 +21,7 @@
+ LANGUAGES = cs de es fr it ja nl pt_BR
+ MOFILES:=$(patsubst %,po/%.mo,$(LANGUAGES))
+ 
+-CPPFLAGS=-DLIBCGETOPT=$(LIBCGETOPT) -DWITH_GETTEXT=$(WITH_GETTEXT) -DLOCALEDIR=\"$(localedir)\" -DNOT_UTIL_LINUX
++CPPFLAGS+=-DLIBCGETOPT=$(LIBCGETOPT) -DWITH_GETTEXT=1 -DLOCALEDIR=\"$(localedir)\" -DNOT_UTIL_LINUX
+ ifeq ($(LIBCGETOPT),0)
+ CPPFLAGS+=-I./gnu 
+ endif
+@@ -44,7 +32,6 @@
+          -Wnested-externs -Winline
+ OPTIMIZE=-O3 -fno-strength-reduce
+ CFLAGS=$(WARNINGS) $(OPTIMIZE)
+-LDFLAGS=
+ 
+ sources=getopt.c
+ ifeq ($(LIBCGETOPT),0)
+@@ -65,32 +52,26 @@
+ 	$(CC) $(LDFLAGS) -o $@ $(objects)
+ 
+ install: getopt install_po
+-	$(INSTALL) -m 755 -d $(DESTDIR)$(bindir) $(DESTDIR)$(man1dir)
+-	$(INSTALL) -m 755 getopt $(DESTDIR)$(bindir)
+-	$(INSTALL) -m 644 getopt.1 $(DESTDIR)$(man1dir)
++	$(INSTALL) -m 755 -d $(bindir) $(man1dir)
++	$(INSTALL) -m 755 getopt $(bindir)
++	$(INSTALL) -m 644 getopt.1 $(man1dir)
+ 
+ install_doc:
+-	$(INSTALL) -m 755 -d $(DESTDIR)$(getoptdir)
++	$(INSTALL) -m 755 -d $(getoptdir)
+ 	$(INSTALL) -m 755 getopt-parse.bash getopt-parse.tcsh \
+ 	                  getopt-test.bash getopt-test.tcsh \
+-	           $(DESTDIR)$(getoptdir)
++	           $(getoptdir)
+ 
+-ifeq ($(WITH_GETTEXT),1)
+ all_po: $(MOFILES)
+ install_po: all_po
+-	$(INSTALL) -m 755 -d $(DESTDIR)$(localedir)
++	$(INSTALL) -m 755 -d $(localedir)
+ 	for lang in $(LANGUAGES) ; do \
+ 	  dir=$(localedir)/$$lang/LC_MESSAGES; \
+-	  $(INSTALL) -m 755 -d $(DESTDIR)$$dir ;\
+-	  $(INSTALL) -m 644 po/$$lang.mo $(DESTDIR)$$dir/getopt.mo  ;\
++	  $(INSTALL) -m 755 -d $$dir ;\
++	  $(INSTALL) -m 644 po/$$lang.mo $$dir/getopt.mo  ;\
+ 	done
+ clean_po:
+ 	$(RM) $(MOFILES)
+-else
+-all_po:
+-install_po:
+-clean_po:
+-endif
+ 
+ %.o: %.c
+ 	$(CC) -c $(CPPFLAGS) $(CFLAGS) $*.c -o $*.o
+@@ -98,11 +79,3 @@
+ %.mo: %.po
+ 	 $(MSGFMT) -o $@ $<
+ 
+-# You need GNU tar for this to work!
+-.PHONY: package
+-package: clean
+-	$(RM) -r $(UNLIKELYNAME)
+-	mkdir $(UNLIKELYNAME)
+-	ln -s .. $(UNLIKELYNAME)/$(BASENAME)
+-	cd $(UNLIKELYNAME) && tar cfvzp ../$(BASENAME).tar.gz --exclude='CVS' --exclude='*.tar.gz' --exclude=$(UNLIKELYNAME) $(BASENAME)/*
+-	$(RM) -r $(UNLIKELYNAME)

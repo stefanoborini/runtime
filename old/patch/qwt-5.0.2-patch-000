@@ -1,0 +1,12 @@
+diff -Naur qwt-5.0.2.new/qwtconfig.pri qwt-5.0.2/qwtconfig.pri
+--- qwt-5.0.2.new/qwtconfig.pri	2008-03-21 20:24:19.000000000 +0100
++++ qwt-5.0.2/qwtconfig.pri	2007-06-11 07:41:29.000000000 +0200
+@@ -3,7 +3,7 @@
+ ######################################################################
+ 
+ unix {
+-    INSTALLBASE    = /usr/local/qwt-5.0.2
++    INSTALLBASE    = @REPLACED_BY_MAKEFILE@
+ }
+ 
+ win32 {

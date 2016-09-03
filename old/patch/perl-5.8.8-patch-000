@@ -1,0 +1,12 @@
+diff -Naur perl-5.8.8/hints/darwin.sh perl-5.8.8.new/hints/darwin.sh
+--- perl-5.8.8/hints/darwin.sh	2005-09-18 17:13:41.000000000 +0200
++++ perl-5.8.8.new/hints/darwin.sh	2007-05-05 18:36:43.000000000 +0200
+@@ -121,7 +121,7 @@
+ esac
+ 
+ # Avoid Apple's cpp precompiler, better for extensions
+-cppflags="${cppflags} -no-cpp-precomp"
++cppflags="${cppflags}"
+ 
+ # This is necessary because perl's build system doesn't
+ # apply cppflags to cc compile lines as it should.

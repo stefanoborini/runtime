@@ -1,0 +1,24 @@
+diff -Naur Python-2.4.6/configure Python-2.4.6.new/configure
+--- Python-2.4.6/configure	2006-10-17 18:03:36.000000000 +0200
++++ Python-2.4.6.new/configure	2009-09-15 22:02:55.000000000 +0200
+@@ -3907,7 +3907,7 @@
+ 	    ;;
+ 	# is there any other compiler on Darwin besides gcc?
+ 	Darwin*)
+-	    BASECFLAGS="$BASECFLAGS -Wno-long-double -no-cpp-precomp -mno-fused-madd"
++	    BASECFLAGS="$BASECFLAGS -mno-fused-madd"
+ 	    if test "${enable_universalsdk}"; then
+ 		BASECFLAGS="-arch ppc -arch i386 -isysroot ${UNIVERSALSDK} ${BASECFLAGS}"
+ 	    fi
+diff -Naur Python-2.4.6/configure.in Python-2.4.6.new/configure.in
+--- Python-2.4.6/configure.in	2006-10-17 18:03:36.000000000 +0200
++++ Python-2.4.6.new/configure.in	2009-09-15 22:03:14.000000000 +0200
+@@ -796,7 +796,7 @@
+ 	    ;;
+ 	# is there any other compiler on Darwin besides gcc?
+ 	Darwin*)
+-	    BASECFLAGS="$BASECFLAGS -Wno-long-double -no-cpp-precomp -mno-fused-madd"
++	    BASECFLAGS="$BASECFLAGS -mno-fused-madd"
+ 	    if test "${enable_universalsdk}"; then
+ 		BASECFLAGS="-arch ppc -arch i386 -isysroot ${UNIVERSALSDK} ${BASECFLAGS}"
+ 	    fi
